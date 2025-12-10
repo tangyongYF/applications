@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { Upload, FileText, X, ArrowUp, ArrowDown, Download, AlertTriangle, ShieldCheck } from 'lucide-react';
+import { Upload, ArrowUp, ArrowDown, Download, AlertTriangle, ShieldCheck, X } from 'lucide-react';
 import { PDFFile, FREE_LIMITS } from '../types';
 import { mergePDFs, downloadFile } from '../services/pdfService';
 import { isProUser, incrementProcessedCount } from '../services/storageService';
@@ -57,12 +57,12 @@ const MergePage: React.FC = () => {
 
     if (!isPro) {
       if (fileCount > FREE_LIMITS.maxMergeFiles) {
-        setPaywallReason(`Free version is limited to ${FREE_LIMITS.maxMergeFiles} files.`);
+        setPaywallReason(`免费版限制最多合并 ${FREE_LIMITS.maxMergeFiles} 个文件。`);
         setShowPaywall(true);
         return;
       }
       if (totalSize > FREE_LIMITS.maxMergeSizeMB) {
-        setPaywallReason(`Free version is limited to ${FREE_LIMITS.maxMergeSizeMB}MB total size.`);
+        setPaywallReason(`免费版限制总大小不超过 ${FREE_LIMITS.maxMergeSizeMB}MB。`);
         setShowPaywall(true);
         return;
       }
@@ -77,12 +77,10 @@ const MergePage: React.FC = () => {
       // Update stats
       incrementProcessedCount(fileCount);
 
-      // Removed auto-download to let user download from Success Modal
-      // downloadFile(mergedBytes, filename); 
       setShowSuccess(true);
     } catch (error) {
       console.error(error);
-      alert('Failed to merge PDFs. Please try again.');
+      alert('合并 PDF 失败。请重试。可能文件受损或加密。');
     } finally {
       setIsProcessing(false);
     }
@@ -94,12 +92,12 @@ const MergePage: React.FC = () => {
   return (
     <div className="max-w-3xl mx-auto">
       <div className="text-center mb-10">
-        <h1 className="text-3xl font-bold text-slate-900 mb-4">Merge PDF Files</h1>
-        <p className="text-slate-600">Combine multiple PDFs into one unified document. Fast, secure, and local.</p>
+        <h1 className="text-3xl font-bold text-slate-900 mb-4">合并 PDF 文件</h1>
+        <p className="text-slate-600">将多个 PDF 合并为一个文档。快速、安全且完全在本地运行。</p>
         {!isProUser() && (
           <div className="mt-4 inline-flex items-center gap-2 text-sm text-orange-600 bg-orange-50 px-3 py-1 rounded-full border border-orange-100">
              <AlertTriangle size={14} />
-             Free Limit: {FREE_LIMITS.maxMergeFiles} files / {FREE_LIMITS.maxMergeSizeMB}MB max
+             免费版限制：{FREE_LIMITS.maxMergeFiles} 个文件 / {FREE_LIMITS.maxMergeSizeMB}MB 大小
           </div>
         )}
       </div>
@@ -108,7 +106,7 @@ const MergePage: React.FC = () => {
         {/* Trust Badge for Upload Area */}
         {files.length === 0 && (
            <div className="absolute top-4 right-4 hidden md:flex items-center gap-1.5 text-xs font-medium text-green-600 bg-green-50 px-2 py-1 rounded border border-green-100 z-10 pointer-events-none">
-             <ShieldCheck size={14} /> Processed locally via WebAssembly
+             <ShieldCheck size={14} /> 本地 WebAssembly 处理
            </div>
         )}
 
@@ -120,8 +118,8 @@ const MergePage: React.FC = () => {
           <div className="w-16 h-16 bg-brand-100 text-brand-600 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
             <Upload size={32} />
           </div>
-          <p className="font-medium text-slate-900">Drop PDFs here or click to upload</p>
-          <p className="text-sm text-slate-500 mt-1">100% Private. No file upload.</p>
+          <p className="font-medium text-slate-900">拖拽 PDF 到此处或点击上传</p>
+          <p className="text-sm text-slate-500 mt-1">100% 隐私保护，无文件上传。</p>
           <input 
             type="file" 
             ref={fileInputRef} 
@@ -136,7 +134,7 @@ const MergePage: React.FC = () => {
         <div className="divide-y divide-slate-100">
           {files.length === 0 ? (
             <div className="p-8 text-center text-slate-400 italic text-sm">
-              No files selected yet.
+              尚未选择文件。
             </div>
           ) : (
             files.map((file, index) => (
@@ -180,7 +178,7 @@ const MergePage: React.FC = () => {
         {/* Footer Actions */}
         <div className="p-4 bg-slate-50 border-t border-slate-200 flex flex-col sm:flex-row justify-between items-center gap-4">
           <div className="text-sm text-slate-600">
-             Total: <span className="font-medium text-slate-900">{files.length}</span> files, <span className={`font-medium ${isOverLimit ? 'text-red-600' : 'text-slate-900'}`}>{totalSize} MB</span>
+             共计：<span className="font-medium text-slate-900">{files.length}</span> 个文件，<span className={`font-medium ${isOverLimit ? 'text-red-600' : 'text-slate-900'}`}>{totalSize} MB</span>
           </div>
           
           <Button 
@@ -189,7 +187,7 @@ const MergePage: React.FC = () => {
             isLoading={isProcessing}
             className="w-full sm:w-auto"
           >
-            Merge Files <Download size={18} className="ml-2" />
+            开始合并 <Download size={18} className="ml-2" />
           </Button>
         </div>
       </div>
@@ -210,7 +208,7 @@ const MergePage: React.FC = () => {
           setFiles([]);
         }}
         fileName={lastResult?.filename || 'merged_files.pdf'}
-        message={`Successfully merged ${files.length} files!`}
+        message={`成功合并 ${files.length} 个文件！`}
       />
     </div>
   );
