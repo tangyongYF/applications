@@ -53,12 +53,12 @@ export default async function handler(req: any, res: any) {
 
     if (fetchError || !license) {
       // 404 for security (don't reveal if code exists but is different) or actual not found
-      return res.status(404).json({ error: 'Invalid license code.' });
+      return res.status(404).json({ error: '激活码无效' });
     }
 
     // 2. Logic Check: Immediate invalidation logic
     if (license.status === 'USED') {
-      return res.status(409).json({ error: 'This license code has already been redeemed.' });
+      return res.status(409).json({ error: '此激活码已被使用' });
     }
 
     // 3. Expiry Calculation (1 Year Validity)
@@ -79,18 +79,18 @@ export default async function handler(req: any, res: any) {
 
     if (updateError) {
       console.error('Update failed:', updateError);
-      return res.status(500).json({ error: 'Activation failed during processing.' });
+      return res.status(500).json({ error: '处理激活请求失败。' });
     }
 
     // 5. Success
     return res.status(200).json({
       success: true,
       expiresAt: oneYearLater.toISOString(),
-      message: 'License activated successfully!'
+      message: '激活成功！'
     });
 
   } catch (err) {
     console.error('Server error:', err);
-    return res.status(500).json({ error: 'Internal server error' });
+    return res.status(500).json({ error: '服务器内部错误' });
   }
 }
