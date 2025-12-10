@@ -22,70 +22,10 @@
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     
-    <!-- 字体 + Tailwind CSS（修复样式失效） -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com"></script>
-
-    <!-- 依赖配置（适配手机端，轻量CDN） -->
-    <script type="importmap">
-    {
-      "imports": {
-        "react": "https://esm.sh/react@18.3.1",
-        "react-dom": "https://esm.sh/react-dom@18.3.1",
-        "pdf-lib": "https://esm.sh/pdf-lib@1.17.1",
-        "jszip": "https://esm.sh/jszip@3.10.1",
-        "lucide-react": "https://esm.sh/lucide-react@0.556.0",
-        "react-router-dom": "https://esm.sh/react-router-dom@6.26.2",
-        "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@2.38.4"
-      }
-    }
-    </script>
-
-    <!-- 移动端优化样式 -->
-    <style>
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-        -webkit-tap-highlight-color: transparent; /* 去掉手机点击高亮 */
-        touch-action: manipulation; /* 优化触摸响应，禁止双击缩放 */
-      }
-      body {
-        font-family: 'Inter', sans-serif;
-        overflow-x: hidden; /* 禁止横向滚动，减少重排 */
-      }
-      #root {
-        min-height: 100vh;
-        display: flex;
-        flex-direction: column;
-      }
-    </style>
-  </head>
-
+</head>
   <body class="bg-slate-50 text-slate-900 antialiased">
     <div id="root"></div>
-
-    <!-- 懒加载核心脚本 + 错误降级（解决手机卡顿） -->
-    <script type="module">
-      // 页面加载完成后再初始化，避免阻塞手机渲染
-      window.addEventListener('DOMContentLoaded', async () => {
-        try {
-          // 按需加载React和业务代码
-          const { createRoot } = await import('react-dom');
-          const { default: App } = await import('/index.tsx');
-          const root = createRoot(document.getElementById('root'));
-          root.render(<App />);
-        } catch (err) {
-          // 加载失败时给手机端友好提示
-          document.getElementById('root').innerHTML = `
-            <div style="padding: 20px; text-align: center; font-family: Inter;">
-              <h3 class="text-lg font-medium text-slate-800 mb-2">页面加载失败</h3>
-              <p class="text-slate-600">请刷新页面或检查网络后重试</p>
-            </div>
-          `;
-          console.error('App init error:', err);
-        }
-      });
-    </script>
+    <script type="module" src="/index.tsx"></script>
   </body>
 </html>
