@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Lock, X, CheckCircle, Loader2, MessageCircle, Copy, Check, QrCode, ScanLine } from 'lucide-react';
+import { Lock, X, MessageCircle, Mail, Loader2, Check, ScanLine, Copy } from 'lucide-react';
 import { activateLicense } from '../services/storageService';
 import Button from './ui/Button';
 
@@ -19,7 +19,7 @@ const PaywallModal: React.FC<PaywallModalProps> = ({ isOpen, onClose, onSuccess,
 
   // --- 🔴 请配置您的信息 🔴 ---
   const CONTACT_WECHAT = "18671390652"; 
-  const CONTACT_EMAIL = "tangyongr@qq.com"; // 请替换您的真实邮箱
+  const CONTACT_EMAIL = "tangyongr@qq.com";
   const PRICE_TEXT = "¥19.9";
 
   if (!isOpen) return null;
@@ -66,13 +66,14 @@ const PaywallModal: React.FC<PaywallModalProps> = ({ isOpen, onClose, onSuccess,
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden animate-in zoom-in-95 duration-200 flex flex-col max-h-[95vh]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/75 backdrop-blur-sm animate-in fade-in duration-200">
+      {/* 增加 max-w-lg 让弹窗更宽，适应大二维码 */}
+      <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full overflow-hidden animate-in zoom-in-95 duration-200 flex flex-col max-h-[95vh]">
         
         {/* Header */}
         <div className="bg-gradient-to-r from-brand-600 to-brand-700 p-4 text-white text-center relative shrink-0">
-          <button onClick={onClose} className="absolute top-4 right-4 text-white/80 hover:text-white">
-            <X size={24} />
+          <button onClick={onClose} className="absolute top-4 right-4 text-white/80 hover:text-white bg-white/10 rounded-full p-1 hover:bg-white/20 transition-colors">
+            <X size={20} />
           </button>
           <h2 className="text-lg font-bold flex items-center justify-center gap-2">
             <Lock size={18} /> 解锁专业版
@@ -80,90 +81,126 @@ const PaywallModal: React.FC<PaywallModalProps> = ({ isOpen, onClose, onSuccess,
           <p className="text-brand-100 text-xs mt-1 opacity-90">{reason}</p>
         </div>
 
-        <div className="p-5 overflow-y-auto custom-scrollbar">
+        <div className="p-6 overflow-y-auto custom-scrollbar">
           
-          {/* 1. Payment Section */}
-          <div className="mb-6">
-            <div className="flex items-center justify-center gap-4 mb-4">
-               <button 
-                 onClick={() => setPaymentMethod('wechat')}
-                 className={`flex-1 py-2 px-3 rounded-lg border text-sm font-medium transition-all flex items-center justify-center gap-2 ${
-                   paymentMethod === 'wechat' 
-                   ? 'border-green-500 bg-green-50 text-green-700 ring-1 ring-green-500' 
-                   : 'border-slate-200 text-slate-500 hover:bg-slate-50'
-                 }`}
-               >
-                 <MessageCircle size={16} /> 微信支付
-               </button>
-               <button 
-                 onClick={() => setPaymentMethod('alipay')}
-                 className={`flex-1 py-2 px-3 rounded-lg border text-sm font-medium transition-all flex items-center justify-center gap-2 ${
-                   paymentMethod === 'alipay' 
-                   ? 'border-blue-500 bg-blue-50 text-blue-700 ring-1 ring-blue-500' 
-                   : 'border-slate-200 text-slate-500 hover:bg-slate-50'
-                 }`}
-               >
-                 <ScanLine size={16} /> 支付宝
-               </button>
-            </div>
+          {/* 1. Payment Tabs */}
+          <div className="flex items-center justify-center gap-3 mb-5">
+             <button 
+               onClick={() => setPaymentMethod('wechat')}
+               className={`flex-1 py-2.5 px-4 rounded-xl border text-sm font-bold transition-all flex items-center justify-center gap-2 ${
+                 paymentMethod === 'wechat' 
+                 ? 'border-green-500 bg-green-50 text-green-700 ring-2 ring-green-500 ring-offset-1' 
+                 : 'border-slate-200 text-slate-500 hover:bg-slate-50'
+               }`}
+             >
+               <MessageCircle size={18} className={paymentMethod === 'wechat' ? 'fill-current' : ''} /> 微信支付
+             </button>
+             <button 
+               onClick={() => setPaymentMethod('alipay')}
+               className={`flex-1 py-2.5 px-4 rounded-xl border text-sm font-bold transition-all flex items-center justify-center gap-2 ${
+                 paymentMethod === 'alipay' 
+                 ? 'border-blue-500 bg-blue-50 text-blue-700 ring-2 ring-blue-500 ring-offset-1' 
+                 : 'border-slate-200 text-slate-500 hover:bg-slate-50'
+               }`}
+             >
+               <ScanLine size={18} /> 支付宝
+             </button>
+          </div>
 
-            {/* QR Code Container */}
-            <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 flex flex-col items-center">
-              <div className="w-40 h-40 bg-white border border-slate-200 rounded-lg flex items-center justify-center overflow-hidden mb-3 relative group">
-                {/* 
-                   🔴 关键步骤：请将您的收款码截图重命名为 'wechat-pay.jpg' 和 'alipay.jpg' 
-                   并放入项目的 /public 文件夹中 
-                */}
-                <img 
-                  src={paymentMethod === 'wechat' ? '/wechat-pay.jpg' : '/alipay.jpg'} 
-                  alt="Payment QR Code"
-                  className="w-full h-full object-contain"
-                  onError={(e) => {
-                    // Fallback visual if image not found
-                    e.currentTarget.style.display = 'none';
-                    e.currentTarget.parentElement?.classList.add('bg-slate-100');
-                  }}
-                />
-                <div className="absolute inset-0 flex flex-col items-center justify-center text-slate-400 text-xs p-2 text-center pointer-events-none" style={{display: 'none'}}> 
-                   请在 public 目录添加<br/>{paymentMethod === 'wechat' ? 'wechat-pay.jpg' : 'alipay.jpg'}
-                </div>
-              </div>
-              
-              <p className="text-2xl font-bold text-slate-900">{PRICE_TEXT}</p>
-              <p className="text-xs text-slate-500 mt-1">
-                {paymentMethod === 'wechat' ? '请使用微信扫一扫' : '请使用支付宝扫一扫'}
-              </p>
+          {/* QR Code Container (Enlarged) */}
+          <div className="bg-slate-50 border border-slate-200 rounded-2xl p-6 flex flex-col items-center mb-6 shadow-inner">
+            <div className="w-64 h-64 bg-white border-2 border-slate-200 rounded-xl flex items-center justify-center overflow-hidden mb-4 relative shadow-sm">
+              {/* 
+                 请确保您的 /public 文件夹中有 'wechat-pay.jpg' 和 'alipay.jpg' 
+              */}
+              <img 
+                src={paymentMethod === 'wechat' ? '/wechat-pay.jpg' : '/alipay.jpg'} 
+                alt="Payment QR Code"
+                className="w-full h-full object-contain"
+                onError={(e) => {
+                  e.currentTarget.style.display = 'none';
+                  // 显示占位提示
+                  const parent = e.currentTarget.parentElement;
+                  if (parent) {
+                    parent.innerHTML = `<div class='text-center text-slate-400 text-xs p-4'>请添加收款码图片到<br/>public/${paymentMethod === 'wechat' ? 'wechat-pay.jpg' : 'alipay.jpg'}</div>`;
+                  }
+                }}
+              />
+            </div>
+            
+            <div className="text-center">
+               <p className="text-3xl font-extrabold text-slate-900 tracking-tight">{PRICE_TEXT} <span className="text-sm font-normal text-slate-500">/ 终身</span></p>
+               <p className="text-sm text-slate-500 mt-1 font-medium">
+                 {paymentMethod === 'wechat' ? '请打开微信 [扫一扫]' : '请打开支付宝 [扫一扫]'}
+               </p>
             </div>
           </div>
 
-          {/* 2. Verification Steps */}
-          <div className="space-y-3 mb-6 bg-white p-3 rounded-lg border border-slate-100">
-            <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wide mb-2 text-center">支付后如何获取激活码？</h4>
+          {/* 2. Verification Steps & Contact Info */}
+          <div className="space-y-4 mb-6">
+            <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider text-center">支付后如何获取激活码？</h4>
             
-            <div className="flex items-start gap-3 text-sm">
-              <span className="flex-shrink-0 w-5 h-5 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center text-xs font-bold mt-0.5">1</span>
-              <div>
-                <p className="text-slate-600">添加作者微信，发送<span className="font-bold text-slate-900">支付截图</span>。</p>
-                <div className="flex items-center gap-2 mt-1.5 p-1.5 bg-slate-50 rounded border border-slate-200 w-fit">
-                   <span className="font-mono font-medium text-slate-800 text-xs">{CONTACT_WECHAT}</span>
-                   <button 
-                    onClick={() => copyToClipboard(CONTACT_WECHAT, 'wechat')}
-                    className="text-xs text-brand-600 font-bold hover:underline"
-                   >
-                    {copiedField === 'wechat' ? '已复制' : '复制微信号'}
-                   </button>
+            <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-sm">
+              <div className="flex items-start gap-3 mb-4">
+                <span className="flex-shrink-0 w-6 h-6 rounded-full bg-brand-100 text-brand-700 flex items-center justify-center text-xs font-bold mt-0.5">1</span>
+                <div className="flex-1">
+                  <p className="text-sm text-slate-700 font-medium">发送<span className="text-brand-700 font-bold">支付截图</span>给作者</p>
+                  <p className="text-xs text-slate-500 mt-1">请添加微信或发送邮件，我们会尽快回复。</p>
+                  
+                  {/* Contact Cards */}
+                  <div className="mt-3 grid grid-cols-1 gap-2">
+                    {/* WeChat Card */}
+                    <div className="flex items-center justify-between bg-slate-50 p-2.5 rounded-lg border border-slate-100">
+                       <div className="flex items-center gap-2 overflow-hidden">
+                          <div className="bg-green-100 p-1.5 rounded text-green-600">
+                             <MessageCircle size={16} />
+                          </div>
+                          <div className="flex flex-col min-w-0">
+                             <span className="text-[10px] text-slate-400 font-bold uppercase">微信号</span>
+                             <span className="text-sm font-mono font-bold text-slate-700 truncate">{CONTACT_WECHAT}</span>
+                          </div>
+                       </div>
+                       <button 
+                         onClick={() => copyToClipboard(CONTACT_WECHAT, 'wechat')}
+                         className="px-3 py-1.5 bg-white border border-slate-200 rounded text-xs font-bold text-slate-600 hover:text-brand-600 hover:border-brand-200 transition-colors flex items-center gap-1 shadow-sm"
+                       >
+                         {copiedField === 'wechat' ? <Check size={12} className="text-green-500"/> : <Copy size={12} />}
+                         {copiedField === 'wechat' ? '已复制' : '复制'}
+                       </button>
+                    </div>
+
+                    {/* Email Card */}
+                    <div className="flex items-center justify-between bg-slate-50 p-2.5 rounded-lg border border-slate-100">
+                       <div className="flex items-center gap-2 overflow-hidden">
+                          <div className="bg-blue-100 p-1.5 rounded text-blue-600">
+                             <Mail size={16} />
+                          </div>
+                          <div className="flex flex-col min-w-0">
+                             <span className="text-[10px] text-slate-400 font-bold uppercase">邮箱</span>
+                             <span className="text-sm font-mono font-bold text-slate-700 truncate">{CONTACT_EMAIL}</span>
+                          </div>
+                       </div>
+                       <button 
+                         onClick={() => copyToClipboard(CONTACT_EMAIL, 'email')}
+                         className="px-3 py-1.5 bg-white border border-slate-200 rounded text-xs font-bold text-slate-600 hover:text-brand-600 hover:border-brand-200 transition-colors flex items-center gap-1 shadow-sm"
+                       >
+                         {copiedField === 'email' ? <Check size={12} className="text-green-500"/> : <Copy size={12} />}
+                         {copiedField === 'email' ? '已复制' : '复制'}
+                       </button>
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
-            
-            <div className="flex items-start gap-3 text-sm">
-              <span className="flex-shrink-0 w-5 h-5 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center text-xs font-bold mt-0.5">2</span>
-              <p className="text-slate-600">作者确认后，将直接发送<span className="font-bold text-brand-600">激活码</span>给您。</p>
+              
+              <div className="flex items-start gap-3">
+                <span className="flex-shrink-0 w-6 h-6 rounded-full bg-slate-100 text-slate-500 flex items-center justify-center text-xs font-bold mt-0.5">2</span>
+                <p className="text-sm text-slate-600 pt-0.5">作者确认后，将直接发送<span className="font-bold text-slate-900 bg-yellow-100 px-1 rounded">激活码</span>给您。</p>
+              </div>
             </div>
           </div>
 
           {/* 3. Input Key */}
-          <div className="border-t border-slate-100 pt-4">
+          <div className="pt-2">
             <form onSubmit={handleSubmit} className="space-y-3">
               <input 
                 type="text" 
@@ -173,13 +210,13 @@ const PaywallModal: React.FC<PaywallModalProps> = ({ isOpen, onClose, onSuccess,
                   setError('');
                 }}
                 disabled={isVerifying}
-                placeholder="在此输入激活码: LP-XXXX-XXXX"
-                className="w-full px-3 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 outline-none text-center font-mono text-sm uppercase transition-all"
+                placeholder="收到后在此输入: LP-XXXX-XXXX"
+                className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:border-brand-500 focus:ring-0 outline-none text-center font-mono text-base uppercase transition-all placeholder:text-slate-300"
               />
-              {error && <p className="text-red-500 text-xs text-center font-medium animate-pulse">{error}</p>}
+              {error && <p className="text-red-500 text-xs text-center font-bold animate-pulse">{error}</p>}
               
-              <Button type="submit" className="w-full justify-center" variant="primary" disabled={isVerifying}>
-                {isVerifying ? <><Loader2 className="animate-spin mr-2 h-4 w-4" /> 验证中...</> : '立即激活'}
+              <Button type="submit" className="w-full justify-center py-3.5 text-base shadow-lg shadow-brand-200" variant="primary" disabled={isVerifying}>
+                {isVerifying ? <><Loader2 className="animate-spin mr-2 h-5 w-5" /> 正在验证...</> : '立即激活 Pro'}
               </Button>
             </form>
           </div>
