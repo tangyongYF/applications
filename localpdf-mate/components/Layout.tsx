@@ -31,7 +31,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
   // Simple hard refresh to clear pro state for demo purposes if needed
   const handleLogout = () => {
-    if(confirm("Remove Pro license?")) {
+    if(confirm("确定要移除 Pro 授权吗？")) {
       removeLicense();
       window.location.reload();
     }
@@ -39,7 +39,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
   const handleCompressClick = () => {
     if (isPro) {
-      alert("🚀 Pro Feature: High-efficiency compression is coming next week! Stay tuned.");
+      alert("🚀 Pro 功能预告：高效压缩功能将在下周推出！敬请期待。");
     } else {
       setShowCompressPaywall(true);
     }
@@ -68,7 +68,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                     }`
                   }
                 >
-                  <Files size={18} className="mr-2" /> Merge
+                  <Files size={18} className="mr-2" /> 合并
                 </NavLink>
                 <NavLink 
                   to="/split"
@@ -80,7 +80,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                     }`
                   }
                 >
-                  <Scissors size={18} className="mr-2" /> Split
+                  <Scissors size={18} className="mr-2" /> 拆分
                 </NavLink>
                 
                 {/* Ghost Feature Button */}
@@ -88,7 +88,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                   onClick={handleCompressClick}
                   className="inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium text-slate-500 hover:text-slate-900 hover:border-slate-300 transition-colors"
                 >
-                  <Minimize2 size={18} className="mr-2" /> Compress 
+                  <Minimize2 size={18} className="mr-2" /> 压缩 
                   <span className="ml-1.5 inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-600 border border-slate-200">
                     PRO
                   </span>
@@ -98,11 +98,11 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
             <div className="flex items-center gap-3">
               {isPro ? (
                  <span onClick={handleLogout} className="cursor-pointer inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800 border border-amber-200">
-                   PRO Active
+                   专业版已激活
                  </span>
               ) : (
                 <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-600 border border-slate-200">
-                  Free Plan
+                  免费版
                 </span>
               )}
             </div>
@@ -113,13 +113,13 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
       {/* Mobile Nav */}
       <div className="sm:hidden bg-white border-b border-slate-200 flex justify-around py-2">
          <NavLink to="/merge" className={({isActive}) => `flex flex-col items-center p-2 text-xs ${isActive ? 'text-brand-600' : 'text-slate-500'}`}>
-            <Files size={20} /> <span className="mt-1">Merge</span>
+            <Files size={20} /> <span className="mt-1">合并</span>
          </NavLink>
          <NavLink to="/split" className={({isActive}) => `flex flex-col items-center p-2 text-xs ${isActive ? 'text-brand-600' : 'text-slate-500'}`}>
-            <Scissors size={20} /> <span className="mt-1">Split</span>
+            <Scissors size={20} /> <span className="mt-1">拆分</span>
          </NavLink>
          <button onClick={handleCompressClick} className="flex flex-col items-center p-2 text-xs text-slate-500">
-            <Minimize2 size={20} /> <span className="mt-1">Compress</span>
+            <Minimize2 size={20} /> <span className="mt-1">压缩</span>
          </button>
       </div>
 
@@ -134,11 +134,11 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                <p>© 2024 LocalPDF Mate.</p>
                {/* Personal Stats */}
                <p className="hidden sm:block text-slate-300">|</p>
-               <p>You have processed <span className="font-bold text-slate-900">{processedCount}</span> files locally.</p>
+               <p>您已本地处理了 <span className="font-bold text-slate-900">{processedCount}</span> 个文件。</p>
              </div>
              <div className="flex items-center gap-2 text-slate-500 text-sm bg-slate-50 px-3 py-1.5 rounded-full border border-slate-100">
                 <ShieldCheck size={14} className="text-green-600" />
-                <span className="font-medium">Privacy Disclaimer:</span> No data is sent to servers. All processing is local.
+                <span className="font-medium">隐私声明：</span> 无数据上传服务器。所有处理均在本地完成。
              </div>
           </div>
         </div>
@@ -152,9 +152,9 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
               <WifiOff size={20} />
             </div>
             <div>
-              <h4 className="font-bold text-green-800 text-sm">You are offline</h4>
+              <h4 className="font-bold text-green-800 text-sm">您处于离线状态</h4>
               <p className="text-green-700 text-xs mt-1">
-                App works perfectly! This is proof that we don't upload your files. Your data never leaves this device.
+                应用可完美运行！这有力证明了我们不会上传您的文件。您的数据从未离开此设备。
               </p>
             </div>
           </div>
@@ -166,7 +166,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         isOpen={showCompressPaywall}
         onClose={() => setShowCompressPaywall(false)}
         onSuccess={() => setShowCompressPaywall(false)}
-        reason="PDF Compression is a Pro feature available in the next update."
+        reason="PDF 压缩是 Pro 功能，将在下个版本更新。"
       />
     </div>
   );
