@@ -1,5 +1,5 @@
 import React from 'react';
-import { Download, RefreshCw, X, CheckCircle, Lock } from 'lucide-react';
+import { Download, RefreshCw, CheckCircle, Lock } from 'lucide-react';
 import Button from './ui/Button';
 import { isProUser } from '../services/storageService';
 
@@ -18,7 +18,7 @@ const SuccessModal: React.FC<SuccessModalProps> = ({
   onDownloadAgain, 
   onStartOver,
   fileName,
-  message = "Your file is ready!"
+  message = "您的文件已准备就绪！"
 }) => {
   if (!isOpen) return null;
   
@@ -31,7 +31,7 @@ const SuccessModal: React.FC<SuccessModalProps> = ({
           <div className="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mb-4 shadow-sm">
             <CheckCircle size={32} />
           </div>
-          <h2 className="text-xl font-bold text-slate-900">Success!</h2>
+          <h2 className="text-xl font-bold text-slate-900">处理成功！</h2>
           <p className="text-slate-600 mt-1">{message}</p>
           <p className="text-xs text-slate-400 mt-2 font-mono bg-white px-2 py-1 rounded border border-slate-100 truncate max-w-full">
             {fileName}
@@ -40,18 +40,18 @@ const SuccessModal: React.FC<SuccessModalProps> = ({
 
         <div className="p-6 space-y-3">
           <Button onClick={onDownloadAgain} className="w-full justify-center" variant="primary">
-            <Download size={18} className="mr-2" /> Download File
+            <Download size={18} className="mr-2" /> 下载文件
           </Button>
           
           <Button onClick={onStartOver} className="w-full justify-center" variant="secondary">
-            <RefreshCw size={18} className="mr-2" /> Process Another
+            <RefreshCw size={18} className="mr-2" /> 处理其他文件
           </Button>
 
           {!isPro && (
             <div className="mt-4 pt-4 border-t border-slate-100 text-center">
-              <p className="text-xs text-slate-500 mb-2">Enjoying LocalPDF?</p>
+              <p className="text-xs text-slate-500 mb-2">喜欢 LocalPDF Mate？</p>
               <a href="#" onClick={(e) => e.preventDefault()} className="text-xs font-medium text-brand-600 flex items-center justify-center gap-1 hover:underline">
-                <Lock size={12} /> Get Unlimited Access for $2.99
+                <Lock size={12} /> ¥19.9 解锁无限使用权
               </a>
             </div>
           )}
