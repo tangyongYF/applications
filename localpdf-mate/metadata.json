@@ -1,0 +1,5 @@
+{
+  "name": "LocalPDF Mate",
+  "description": "Secure, fast, and private PDF tools running entirely in your browser. Merge and Split PDFs without uploading files to any server.",
+  "requestFramePermissions": []
+}
