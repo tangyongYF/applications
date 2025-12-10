@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Lock, X, CheckCircle, ShieldCheck, Loader2, MessageCircle, Mail, Copy, Check } from 'lucide-react';
+import { Lock, X, CheckCircle, Loader2, MessageCircle, Mail, Check } from 'lucide-react';
 import { activateLicense } from '../services/storageService';
 import Button from './ui/Button';
 
