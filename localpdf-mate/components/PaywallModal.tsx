@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Lock, X, CheckCircle, ShieldCheck, Loader2, MessageCircle, Globe } from 'lucide-react';
+import { Lock, X, CheckCircle, ShieldCheck, Loader2, MessageCircle, Mail, Copy, Check } from 'lucide-react';
 import { activateLicense } from '../services/storageService';
 import Button from './ui/Button';
 
@@ -10,33 +10,22 @@ interface PaywallModalProps {
   reason: string;
 }
 
-// ============================================================================
-// 🛠️ 极简 MVP 配置 (人工发码模式)
-// ============================================================================
-// 1. 验证逻辑：纯本地验证，不需要数据库。
-// 2. 激活码：所有用户使用同一个通用码（或者你设置几个），例如 "VIP-8888"。
-// 3. 支付流程：用户加微信/去面包多 -> 付款 -> 你给他发 "VIP-8888"。
-// ============================================================================
-
-// 这是你的【通用激活码】。
-// 你在面包多设置自动发货内容为这个码，或者微信手动发给用户这个码。
-const MASTER_KEY = "VIP-8888"; 
-
-// 你的面包多商品链接（推荐配置，方便自动发货）
-const LINK_MIANBAODUO = "#"; 
-
 const PaywallModal: React.FC<PaywallModalProps> = ({ isOpen, onClose, onSuccess, reason }) => {
   const [licenseKey, setLicenseKey] = useState('');
   const [error, setError] = useState('');
   const [isVerifying, setIsVerifying] = useState(false);
+  const [copiedField, setCopiedField] = useState<string | null>(null);
+
+  // 配置您的联系方式
+  const CONTACT_WECHAT = "18671390652"; 
+  const CONTACT_EMAIL = "tangyongr@qq.com"; // 请替换您的真实邮箱
 
   if (!isOpen) return null;
 
-  const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement>, link: string) => {
-    if (!link || link === '#') {
-      e.preventDefault();
-      alert("请配置您的支付链接，或者让用户加微信转账。");
-    }
+  const copyToClipboard = (text: string, field: string) => {
+    navigator.clipboard.writeText(text);
+    setCopiedField(field);
+    setTimeout(() => setCopiedField(null), 2000);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -51,23 +40,32 @@ const PaywallModal: React.FC<PaywallModalProps> = ({ isOpen, onClose, onSuccess,
     setIsVerifying(true);
     setError('');
 
-    // 模拟网络延迟 (让用户感觉在验证)
-    setTimeout(() => {
-      // 核心验证逻辑：纯本地比对
-      // 只要用户输入的是 MASTER_KEY，就让他过。
-      if (cleanKey === MASTER_KEY || cleanKey === "LOCAL-PDF-VIP") {
-        // 成功！保存状态（有效期设为 100 年，反正是一次性买断）
-        const oneYearLater = new Date();
-        oneYearLater.setFullYear(oneYearLater.getFullYear() + 100);
-        
-        activateLicense(cleanKey, oneYearLater.toISOString());
+    try {
+      // 调用后端 API 进行严格验证
+      const response = await fetch('/api/redeem', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ code: cleanKey }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        // 验证成功！
+        activateLicense(cleanKey, data.expiresAt);
         onSuccess();
         onClose();
       } else {
-        setError('激活码无效，请检查输入或联系作者');
+        // 验证失败
+        setError(data.error || '激活码无效或已被使用');
       }
+    } catch (err) {
+      setError('网络连接失败，请检查网络');
+    } finally {
       setIsVerifying(false);
-    }, 1000);
+    }
   };
 
   return (
@@ -98,50 +96,73 @@ const PaywallModal: React.FC<PaywallModalProps> = ({ isOpen, onClose, onSuccess,
               <CheckCircle className="text-green-500 shrink-0 mt-0.5" size={18} />
               <p className="text-sm">支持批量处理 (100+ 文件)</p>
             </div>
-            <div className="flex items-start gap-3 text-slate-700">
-              <ShieldCheck className="text-green-500 shrink-0 mt-0.5" size={18} />
-              <p className="text-sm">100% 隐私安全 (本地离线处理)</p>
-            </div>
           </div>
 
-          {/* Pricing Box - 极简人工流 */}
+          {/* Manual Payment Guide */}
           <div className="bg-slate-50 border border-slate-200 rounded-xl p-5 mb-6">
-            <div className="text-center mb-4">
-               <p className="text-slate-500 text-sm">一次性付费，终身使用</p>
-               <p className="text-3xl font-bold text-slate-900 mt-1">¥19.9 <span className="text-sm font-normal text-slate-400">/ $2.99</span></p>
+            <div className="text-center mb-4 border-b border-slate-200 pb-3">
+               <p className="text-slate-500 text-xs uppercase tracking-wide font-semibold">如何获取激活码？</p>
+               <p className="text-2xl font-bold text-slate-900 mt-2">¥19.9 <span className="text-sm font-normal text-slate-400">/ 终身授权</span></p>
             </div>
 
-            <div className="space-y-3">
-              {/* 方式 1: 面包多 (自动发货通用码) */}
-              <a 
-                href={LINK_MIANBAODUO}
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={(e) => handleLinkClick(e, LINK_MIANBAODUO)}
-                className="flex items-center justify-center gap-2 w-full bg-[#07c160] hover:bg-[#06ad56] text-white py-2.5 rounded-lg font-bold shadow-sm transition-all"
-              >
-                <Globe size={18} />
-                <span>在线购买 (自动发码)</span>
-              </a>
+            <div className="space-y-4 text-sm text-slate-600">
+              <div className="flex gap-3">
+                <span className="flex-shrink-0 w-6 h-6 rounded-full bg-brand-100 text-brand-600 flex items-center justify-center font-bold text-xs">1</span>
+                <p>扫描微信/支付宝二维码支付，或转账给作者。</p>
+              </div>
+              
+              <div className="flex gap-3">
+                 <span className="flex-shrink-0 w-6 h-6 rounded-full bg-brand-100 text-brand-600 flex items-center justify-center font-bold text-xs">2</span>
+                 <p>发送<span className="font-bold text-slate-900">支付截图</span>给作者 (微信或邮件)。</p>
+              </div>
 
-              {/* 方式 2: 人工加微信 (兜底) */}
-              <div className="flex items-center justify-center gap-2 w-full bg-white text-slate-700 border border-slate-300 py-2.5 rounded-lg font-medium text-sm">
-                <MessageCircle size={18} className="text-brand-600" />
-                <span>或加微信: <span className="font-bold text-slate-900 select-all">TangYong_Dev</span></span>
+              {/* Contact Info Box */}
+              <div className="bg-white border border-slate-200 rounded-lg p-3 space-y-2">
+                {/* WeChat */}
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2 text-slate-700">
+                    <MessageCircle size={16} className="text-green-600" />
+                    <span className="font-medium">微信:</span>
+                    <span className="font-mono bg-slate-100 px-1 rounded">{CONTACT_WECHAT}</span>
+                  </div>
+                  <button 
+                    onClick={() => copyToClipboard(CONTACT_WECHAT, 'wechat')}
+                    className="text-xs text-brand-600 hover:text-brand-700 font-medium"
+                  >
+                    {copiedField === 'wechat' ? <span className="flex items-center text-green-600"><Check size={12} className="mr-1"/>已复制</span> : '复制'}
+                  </button>
+                </div>
+
+                {/* Email */}
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2 text-slate-700">
+                    <Mail size={16} className="text-blue-500" />
+                    <span className="font-medium">邮箱:</span>
+                    <span className="font-mono bg-slate-100 px-1 rounded truncate max-w-[120px] sm:max-w-none">{CONTACT_EMAIL}</span>
+                  </div>
+                  <button 
+                    onClick={() => copyToClipboard(CONTACT_EMAIL, 'email')}
+                    className="text-xs text-brand-600 hover:text-brand-700 font-medium"
+                  >
+                    {copiedField === 'email' ? <span className="flex items-center text-green-600"><Check size={12} className="mr-1"/>已复制</span> : '复制'}
+                  </button>
+                </div>
+              </div>
+
+              <div className="flex gap-3">
+                 <span className="flex-shrink-0 w-6 h-6 rounded-full bg-brand-100 text-brand-600 flex items-center justify-center font-bold text-xs">3</span>
+                 <p>作者确认后，将人工发送<span className="font-bold text-slate-900">激活码</span>给您。</p>
               </div>
             </div>
-            <p className="text-[10px] text-center text-slate-400 mt-3">
-              付款后您将获得一个永久激活码 (Code)
-            </p>
           </div>
 
           {/* Activation Form */}
-          <div className="relative mb-5">
+          <div className="relative mb-4">
             <div className="absolute inset-0 flex items-center">
               <div className="w-full border-t border-slate-200"></div>
             </div>
             <div className="relative flex justify-center text-xs uppercase tracking-wide">
-              <span className="px-2 bg-white text-slate-400">输入激活码</span>
+              <span className="px-2 bg-white text-slate-400">收到码后在此输入</span>
             </div>
           </div>
 
@@ -155,7 +176,7 @@ const PaywallModal: React.FC<PaywallModalProps> = ({ isOpen, onClose, onSuccess,
                   setError('');
                 }}
                 disabled={isVerifying}
-                placeholder="例如: VIP-8888"
+                placeholder="LP-XXXX-XXXX"
                 className="w-full px-3 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-all text-center font-mono text-sm uppercase disabled:opacity-50 disabled:bg-slate-100"
               />
               {error && <p className="text-red-500 text-xs mt-1 text-center font-medium animate-pulse">{error}</p>}
@@ -166,7 +187,7 @@ const PaywallModal: React.FC<PaywallModalProps> = ({ isOpen, onClose, onSuccess,
                   <Loader2 className="animate-spin mr-2 h-4 w-4" /> 验证中...
                 </>
               ) : (
-                '解锁'
+                '立即解锁'
               )}
             </Button>
           </form>
