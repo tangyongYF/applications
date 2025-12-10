@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { Upload, ArrowUp, ArrowDown, Download, AlertTriangle, ShieldCheck, X } from 'lucide-react';
+import { Upload, ArrowUp, ArrowDown, Download, AlertTriangle, ShieldCheck, X, FileQuestion, Lock, Zap } from 'lucide-react';
 import { PDFFile, FREE_LIMITS } from '../types';
 import { mergePDFs, downloadFile } from '../services/pdfService';
 import { isProUser, incrementProcessedCount } from '../services/storageService';
@@ -195,7 +195,7 @@ const MergePage: React.FC = () => {
       <PaywallModal 
         isOpen={showPaywall} 
         onClose={() => setShowPaywall(false)}
-        onSuccess={handleMerge} // Retry merge on success
+        onSuccess={handleMerge} 
         reason={paywallReason}
       />
 
@@ -210,6 +210,57 @@ const MergePage: React.FC = () => {
         fileName={lastResult?.filename || 'merged_files.pdf'}
         message={`成功合并 ${files.length} 个文件！`}
       />
+
+      {/* SEO Content Section */}
+      <div className="mt-20 border-t border-slate-200 pt-10">
+        <h2 className="text-xl font-bold text-slate-900 mb-6 text-center">关于 PDF 合并的常见问题</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="bg-slate-50 rounded-lg p-6">
+             <div className="flex items-center gap-2 mb-3">
+               <ShieldCheck className="text-green-600" size={20} />
+               <h3 className="font-bold text-slate-900">使用 LocalPDF 合并文件安全吗？</h3>
+             </div>
+             <p className="text-sm text-slate-600 leading-relaxed">
+               绝对安全！与传统的在线 PDF 工具不同，极速PDF工具箱采用 <span className="font-semibold text-slate-900">WebAssembly 技术</span>，
+               所有文件处理都在您的浏览器本地完成。您的文件从未上传到我们的服务器，因此不存在任何数据泄露风险，特别适合处理合同、发票等敏感文档。
+             </p>
+          </div>
+
+          <div className="bg-slate-50 rounded-lg p-6">
+             <div className="flex items-center gap-2 mb-3">
+               <Zap className="text-amber-500" size={20} />
+               <h3 className="font-bold text-slate-900">为什么选择离线合并？</h3>
+             </div>
+             <p className="text-sm text-slate-600 leading-relaxed">
+               速度快！因为不需要等待文件上传和下载，合并过程几乎是瞬间完成的。即使是 100MB 的大文件，也能在几秒钟内完成合并。
+               同时，您不需要担心网络环境，断网也能使用。
+             </p>
+          </div>
+
+          <div className="bg-slate-50 rounded-lg p-6">
+             <div className="flex items-center gap-2 mb-3">
+               <Lock className="text-brand-600" size={20} />
+               <h3 className="font-bold text-slate-900">免费版有什么限制？</h3>
+             </div>
+             <p className="text-sm text-slate-600 leading-relaxed">
+               极速PDF工具箱的免费版支持合并最多 3 个文件，总大小不超过 10MB。
+               如果您需要处理更多文件或大文件，建议升级到 <span className="font-semibold text-slate-900">终身专业版</span>，
+               仅需一杯咖啡的价格，即可解锁无限使用权。
+             </p>
+          </div>
+
+          <div className="bg-slate-50 rounded-lg p-6">
+             <div className="flex items-center gap-2 mb-3">
+               <FileQuestion className="text-slate-500" size={20} />
+               <h3 className="font-bold text-slate-900">如何调整文件顺序？</h3>
+             </div>
+             <p className="text-sm text-slate-600 leading-relaxed">
+               上传文件后，您可以使用列表右侧的“向上”和“向下”箭头来调整 PDF 文件的合并顺序。
+               合并后的 PDF 将严格按照列表从上到下的顺序生成。
+             </p>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
