@@ -1,5 +1,5 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { Upload, FileText, Download, AlertTriangle, Layers, Split, Eye, Check, ShieldCheck } from 'lucide-react';
+import React, { useState, useRef } from 'react';
+import { Upload, FileText, Eye, Split, Layers, AlertTriangle, ShieldCheck } from 'lucide-react';
 import { PDFFile, FREE_LIMITS } from '../types';
 import { splitPDF, downloadFile, getPageCount, parsePageRange } from '../services/pdfService';
 import { isProUser, incrementProcessedCount } from '../services/storageService';
@@ -38,7 +38,7 @@ const SplitPage: React.FC = () => {
         setPageCount(count);
         setRangeStr(`1-${Math.min(count, 5)}`); // Default suggestion
       } catch (e: any) {
-        alert(e.message || "Failed to load PDF");
+        alert(e.message || "加载 PDF 失败");
       }
     }
     if (fileInputRef.current) fileInputRef.current.value = '';
@@ -59,12 +59,12 @@ const SplitPage: React.FC = () => {
 
     if (!isPro) {
       if (sizeMB > FREE_LIMITS.maxSplitSizeMB) {
-        setPaywallReason(`Free version is limited to ${FREE_LIMITS.maxSplitSizeMB}MB file size.`);
+        setPaywallReason(`免费版限制文件大小不超过 ${FREE_LIMITS.maxSplitSizeMB}MB。`);
         setShowPaywall(true);
         return;
       }
       if (pageCount > FREE_LIMITS.maxSplitPages) {
-        setPaywallReason(`Free version is limited to ${FREE_LIMITS.maxSplitPages} pages.`);
+        setPaywallReason(`免费版限制页数不超过 ${FREE_LIMITS.maxSplitPages} 页。`);
         setShowPaywall(true);
         return;
       }
@@ -78,12 +78,10 @@ const SplitPage: React.FC = () => {
       // Update stats
       incrementProcessedCount(1);
       
-      // Removed auto-download to let user download from Success Modal
-      // downloadFile(result.data, result.filename);
       setShowSuccess(true);
     } catch (error) {
       console.error(error);
-      alert('Failed to split PDF. Please check your range format.');
+      alert('拆分 PDF 失败。请检查页码格式。');
     } finally {
       setIsProcessing(false);
     }
@@ -137,12 +135,12 @@ const SplitPage: React.FC = () => {
   return (
     <div className="max-w-3xl mx-auto">
       <div className="text-center mb-10">
-        <h1 className="text-3xl font-bold text-slate-900 mb-4">Split PDF File</h1>
-        <p className="text-slate-600">Extract pages or split every page into separate files.</p>
+        <h1 className="text-3xl font-bold text-slate-900 mb-4">拆分 PDF 文件</h1>
+        <p className="text-slate-600">提取指定页面或将每页拆分为单独文件。</p>
         {!isProUser() && (
           <div className="mt-4 inline-flex items-center gap-2 text-sm text-orange-600 bg-orange-50 px-3 py-1 rounded-full border border-orange-100">
              <AlertTriangle size={14} />
-             Free Limit: {FREE_LIMITS.maxSplitSizeMB}MB size / {FREE_LIMITS.maxSplitPages} pages
+             免费版限制：{FREE_LIMITS.maxSplitSizeMB}MB 大小 / {FREE_LIMITS.maxSplitPages} 页
           </div>
         )}
       </div>
@@ -151,7 +149,7 @@ const SplitPage: React.FC = () => {
         {/* Trust Badge for Upload Area */}
         {!file && (
            <div className="absolute top-4 right-4 hidden md:flex items-center gap-1.5 text-xs font-medium text-green-600 bg-green-50 px-2 py-1 rounded border border-green-100 z-10 pointer-events-none">
-             <ShieldCheck size={14} /> Processed locally via WebAssembly
+             <ShieldCheck size={14} /> 本地 WebAssembly 处理
            </div>
         )}
 
@@ -164,8 +162,8 @@ const SplitPage: React.FC = () => {
             <div className="w-16 h-16 bg-brand-100 text-brand-600 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
               <Upload size={32} />
             </div>
-            <p className="font-medium text-slate-900">Select PDF to Split</p>
-            <p className="text-sm text-slate-500 mt-2">100% Private. No file upload.</p>
+            <p className="font-medium text-slate-900">选择要拆分的 PDF</p>
+            <p className="text-sm text-slate-500 mt-2">100% 隐私保护，无文件上传。</p>
             <input 
               type="file" 
               ref={fileInputRef} 
@@ -187,15 +185,15 @@ const SplitPage: React.FC = () => {
                   <div className="flex items-center gap-3 text-sm text-slate-500">
                     <span>{(file.file.size / (1024 * 1024)).toFixed(2)} MB</span>
                     <span>•</span>
-                    <span className={isOverLimit ? "text-red-600 font-bold" : ""}>{pageCount} Pages</span>
+                    <span className={isOverLimit ? "text-red-600 font-bold" : ""}>{pageCount} 页</span>
                   </div>
                 </div>
               </div>
               <div className="flex items-center gap-2 w-full sm:w-auto">
                 <Button variant="secondary" onClick={handlePreview} className="flex-1 sm:flex-none text-xs">
-                  <Eye size={16} className="mr-1.5" /> Preview
+                  <Eye size={16} className="mr-1.5" /> 预览
                 </Button>
-                <Button variant="ghost" onClick={() => setFile(null)} className="flex-1 sm:flex-none text-xs">Change</Button>
+                <Button variant="ghost" onClick={() => setFile(null)} className="flex-1 sm:flex-none text-xs">更换文件</Button>
               </div>
             </div>
 
@@ -209,8 +207,8 @@ const SplitPage: React.FC = () => {
                   <div className={`mb-2 ${mode === 'range' ? 'text-brand-600' : 'text-slate-400'}`}>
                     <Split size={24} />
                   </div>
-                  <div className="font-bold text-slate-900">Extract Pages</div>
-                  <div className="text-sm text-slate-500 mt-1">Select specific pages to save as a new PDF.</div>
+                  <div className="font-bold text-slate-900">提取页面</div>
+                  <div className="text-sm text-slate-500 mt-1">选择特定页面保存为新 PDF。</div>
                 </button>
 
                 <button 
@@ -220,28 +218,28 @@ const SplitPage: React.FC = () => {
                   <div className={`mb-2 ${mode === 'extract_all' ? 'text-brand-600' : 'text-slate-400'}`}>
                     <Layers size={24} />
                   </div>
-                  <div className="font-bold text-slate-900">Split All Pages</div>
-                  <div className="text-sm text-slate-500 mt-1">Save every page as a separate PDF file (ZIP).</div>
+                  <div className="font-bold text-slate-900">拆分所有页面</div>
+                  <div className="text-sm text-slate-500 mt-1">将每一页保存为单独的 PDF (ZIP)。</div>
                 </button>
               </div>
 
               {mode === 'range' && (
                 <div className="mb-8 space-y-4">
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">Page Selection</label>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">页面选择</label>
                     <input 
                       type="text" 
                       value={rangeStr}
                       onChange={(e) => setRangeStr(e.target.value)}
-                      placeholder="e.g. 1-5, 8, 11-13"
+                      placeholder="例如 1-5, 8, 11-13"
                       className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none"
                     />
-                    <p className="text-xs text-slate-500 mt-2">Enter page numbers manually or click the grid below.</p>
+                    <p className="text-xs text-slate-500 mt-2">手动输入页码或点击下方网格选择。</p>
                   </div>
                   
                   {/* Visual Page Selector */}
                   <div className="border border-slate-200 rounded-lg p-4 bg-slate-50">
-                    <div className="text-xs font-medium text-slate-500 uppercase tracking-wider mb-3">Quick Select</div>
+                    <div className="text-xs font-medium text-slate-500 uppercase tracking-wider mb-3">快速选择</div>
                     <div className="flex flex-wrap gap-2 max-h-48 overflow-y-auto pr-2 custom-scrollbar">
                       {Array.from({ length: Math.min(pageCount, 100) }, (_, i) => i + 1).map((num) => {
                         const isSelected = selectedSet.has(num - 1); // logic uses 0-based
@@ -261,7 +259,7 @@ const SplitPage: React.FC = () => {
                       })}
                       {pageCount > 100 && (
                         <div className="w-full text-center py-2 text-xs text-slate-400 italic">
-                          Showing first 100 pages. Use input box for higher pages.
+                          仅显示前 100 页。更多页面请直接输入。
                         </div>
                       )}
                     </div>
@@ -275,7 +273,7 @@ const SplitPage: React.FC = () => {
                 isLoading={isProcessing}
                 className="w-full py-4 text-lg"
               >
-                {mode === 'range' ? 'Download Extracted PDF' : 'Download ZIP Archive'}
+                {mode === 'range' ? '下载提取后的 PDF' : '下载 ZIP 压缩包'}
               </Button>
             </div>
           </div>
