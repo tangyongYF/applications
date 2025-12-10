@@ -18,6 +18,7 @@ const PaywallModal: React.FC<PaywallModalProps> = ({ isOpen, onClose, onSuccess,
   const [copiedField, setCopiedField] = useState<string | null>(null);
 
   // --- 🔴 请配置您的信息 🔴 ---
+  // 建议：图片请命名为 wechat-pay.jpg 和 alipay.jpg 放在 public 文件夹下
   const CONTACT_WECHAT = "18671390652"; 
   const CONTACT_EMAIL = "tangyongr@qq.com";
   const PRICE_TEXT = "¥19.9";
@@ -156,7 +157,10 @@ const PaywallModal: React.FC<PaywallModalProps> = ({ isOpen, onClose, onSuccess,
                              <MessageCircle size={16} />
                           </div>
                           <div className="flex flex-col min-w-0">
-                             <span className="text-[10px] text-slate-400 font-bold uppercase">微信号</span>
+                             <div className="flex items-center gap-1.5">
+                                <span className="text-[10px] text-slate-400 font-bold uppercase">微信号</span>
+                                <span className="text-[10px] text-emerald-600 bg-emerald-50 px-1 py-0.5 rounded leading-none border border-emerald-100">手机同号</span>
+                             </div>
                              <span className="text-sm font-mono font-bold text-slate-700 truncate">{CONTACT_WECHAT}</span>
                           </div>
                        </div>
