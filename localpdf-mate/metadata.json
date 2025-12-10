@@ -1,5 +1,5 @@
 {
   "name": "LocalPDF Mate",
-  "description": "Secure, fast, and private PDF tools running entirely in your browser. Merge and Split PDFs without uploading files to any server.",
+  "description": "安全、快速且隐私的 PDF 工具，完全在浏览器中运行。无需上传文件即可合并和拆分 PDF。",
   "requestFramePermissions": []
 }
