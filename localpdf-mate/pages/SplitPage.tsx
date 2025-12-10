@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { Upload, FileText, Eye, Split, Layers, AlertTriangle, ShieldCheck } from 'lucide-react';
+import { Upload, FileText, Eye, Split, Layers, AlertTriangle, ShieldCheck, Zap, Lock, FileQuestion } from 'lucide-react';
 import { PDFFile, FREE_LIMITS } from '../types';
 import { splitPDF, downloadFile, getPageCount, parsePageRange } from '../services/pdfService';
 import { isProUser, incrementProcessedCount } from '../services/storageService';
@@ -298,6 +298,55 @@ const SplitPage: React.FC = () => {
         }}
         fileName={lastResult?.filename || 'processed_file.pdf'}
       />
+
+      {/* SEO Content Section */}
+      <div className="mt-20 border-t border-slate-200 pt-10">
+        <h2 className="text-xl font-bold text-slate-900 mb-6 text-center">PDF 拆分常见问题 (FAQ)</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="bg-slate-50 rounded-lg p-6">
+             <div className="flex items-center gap-2 mb-3">
+               <ShieldCheck className="text-green-600" size={20} />
+               <h3 className="font-bold text-slate-900">我的文件会被上传吗？</h3>
+             </div>
+             <p className="text-sm text-slate-600 leading-relaxed">
+               完全不会！极速PDF工具箱是真正的<span className="font-semibold text-slate-900">离线拆分工具</span>。
+               我们利用先进的浏览器技术，在您自己的电脑上完成所有分割操作。文件不经过网络传输，确保隐私绝对安全。
+             </p>
+          </div>
+
+          <div className="bg-slate-50 rounded-lg p-6">
+             <div className="flex items-center gap-2 mb-3">
+               <Split className="text-brand-600" size={20} />
+               <h3 className="font-bold text-slate-900">可以提取哪些页面？</h3>
+             </div>
+             <p className="text-sm text-slate-600 leading-relaxed">
+               非常灵活！您可以输入任何页码组合。比如输入 "1, 3-5, 10" 将会提取第1页、第3到5页以及第10页，并将它们合并成一个新的 PDF 文件下载。
+             </p>
+          </div>
+
+          <div className="bg-slate-50 rounded-lg p-6">
+             <div className="flex items-center gap-2 mb-3">
+               <Layers className="text-amber-500" size={20} />
+               <h3 className="font-bold text-slate-900">什么是“拆分所有页面”？</h3>
+             </div>
+             <p className="text-sm text-slate-600 leading-relaxed">
+               如果您有一个 50 页的文档，想要把这 50 页全部变成单独的文件，选择这个模式即可。
+               我们会自动将它们打包成一个 ZIP 压缩包供您下载，无需手动一页页保存。
+             </p>
+          </div>
+
+          <div className="bg-slate-50 rounded-lg p-6">
+             <div className="flex items-center gap-2 mb-3">
+               <Lock className="text-slate-500" size={20} />
+               <h3 className="font-bold text-slate-900">为什么显示“受密码保护”？</h3>
+             </div>
+             <p className="text-sm text-slate-600 leading-relaxed">
+               如果您的 PDF 文件本身设置了打开密码，为了安全起见，我们无法在不输入密码的情况下进行拆分。
+               请先使用其他工具移除密码，或确认您拥有该文件的编辑权限。
+             </p>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
