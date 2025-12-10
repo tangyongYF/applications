@@ -55,7 +55,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                 <div className="bg-brand-600 text-white p-1.5 rounded-lg">
                   <ShieldCheck size={20} />
                 </div>
-                <span className="font-bold text-xl text-slate-900 tracking-tight">LocalPDF Mate</span>
+                <span className="font-bold text-xl text-slate-900 tracking-tight">极速PDF工具箱</span>
               </div>
               <div className="hidden sm:ml-8 sm:flex sm:space-x-8">
                 <NavLink 
@@ -131,7 +131,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         <div className="max-w-5xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
              <div className="flex flex-col sm:flex-row items-center gap-4 text-sm text-slate-500">
-               <p>© 2024 LocalPDF Mate.</p>
+               <p>© 2024 极速PDF工具箱 (LocalPDF).</p>
                {/* Personal Stats */}
                <p className="hidden sm:block text-slate-300">|</p>
                <p>您已本地处理了 <span className="font-bold text-slate-900">{processedCount}</span> 个文件。</p>
