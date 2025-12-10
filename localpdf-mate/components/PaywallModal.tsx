@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Lock, X, MessageCircle, Mail, Loader2, Check, ScanLine, Copy } from 'lucide-react';
+import { Lock, X, MessageCircle, Mail, Loader2, Check, ScanLine, Copy, Clock, Users, Flame } from 'lucide-react';
 import { activateLicense } from '../services/storageService';
 import Button from './ui/Button';
 
@@ -18,10 +18,10 @@ const PaywallModal: React.FC<PaywallModalProps> = ({ isOpen, onClose, onSuccess,
   const [copiedField, setCopiedField] = useState<string | null>(null);
 
   // --- 🔴 请配置您的信息 🔴 ---
-  // 建议：图片请命名为 wechat-pay.jpg 和 alipay.jpg 放在 public 文件夹下
   const CONTACT_WECHAT = "18671390652"; 
   const CONTACT_EMAIL = "tangyongr@qq.com";
   const PRICE_TEXT = "¥19.9";
+  const ORIGINAL_PRICE = "¥99";
 
   if (!isOpen) return null;
 
@@ -67,23 +67,34 @@ const PaywallModal: React.FC<PaywallModalProps> = ({ isOpen, onClose, onSuccess,
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/75 backdrop-blur-sm animate-in fade-in duration-200">
-      {/* 增加 max-w-lg 让弹窗更宽，适应大二维码 */}
-      <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full overflow-hidden animate-in zoom-in-95 duration-200 flex flex-col max-h-[95vh]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/75 backdrop-blur-sm animate-in fade-in duration-200 overflow-y-auto">
+      <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full overflow-hidden animate-in zoom-in-95 duration-200 flex flex-col my-auto relative">
         
+        {/* FOMO Badge */}
+        <div className="absolute top-0 left-0 bg-red-500 text-white text-[10px] font-bold px-3 py-1 rounded-br-lg z-10 flex items-center gap-1 shadow-sm">
+           <Flame size={12} fill="currentColor" /> 限时特惠
+        </div>
+
         {/* Header */}
-        <div className="bg-gradient-to-r from-brand-600 to-brand-700 p-4 text-white text-center relative shrink-0">
+        <div className="bg-gradient-to-r from-brand-600 to-brand-700 p-5 text-white text-center relative shrink-0 pt-8">
           <button onClick={onClose} className="absolute top-4 right-4 text-white/80 hover:text-white bg-white/10 rounded-full p-1 hover:bg-white/20 transition-colors">
             <X size={20} />
           </button>
-          <h2 className="text-lg font-bold flex items-center justify-center gap-2">
-            <Lock size={18} /> 解锁专业版
+          <h2 className="text-xl font-bold flex items-center justify-center gap-2">
+            <Lock size={20} /> 解锁专业版
           </h2>
-          <p className="text-brand-100 text-xs mt-1 opacity-90">{reason}</p>
+          <p className="text-brand-100 text-sm mt-1 opacity-90">{reason}</p>
         </div>
 
-        <div className="p-6 overflow-y-auto custom-scrollbar">
+        <div className="p-6">
           
+          {/* Social Proof */}
+          <div className="flex items-center justify-center gap-4 text-xs text-slate-500 mb-5 bg-slate-50 py-2 rounded-lg">
+             <span className="flex items-center gap-1"><Users size={14} className="text-brand-600"/> 500+ 用户已升级</span>
+             <span className="w-px h-3 bg-slate-300"></span>
+             <span className="flex items-center gap-1"><Clock size={14} className="text-green-600"/> 平均 5 分钟内发码</span>
+          </div>
+
           {/* 1. Payment Tabs */}
           <div className="flex items-center justify-center gap-3 mb-5">
              <button 
@@ -108,19 +119,20 @@ const PaywallModal: React.FC<PaywallModalProps> = ({ isOpen, onClose, onSuccess,
              </button>
           </div>
 
-          {/* QR Code Container (Enlarged) */}
-          <div className="bg-slate-50 border border-slate-200 rounded-2xl p-6 flex flex-col items-center mb-6 shadow-inner">
+          {/* QR Code Container */}
+          <div className="bg-slate-50 border border-slate-200 rounded-2xl p-6 flex flex-col items-center mb-6 shadow-inner relative overflow-hidden">
+            {/* Discount Label */}
+            <div className="absolute top-3 right-3 bg-red-100 text-red-600 text-xs font-bold px-2 py-0.5 rounded border border-red-200 transform rotate-2">
+               立省 80%
+            </div>
+
             <div className="w-64 h-64 bg-white border-2 border-slate-200 rounded-xl flex items-center justify-center overflow-hidden mb-4 relative shadow-sm">
-              {/* 
-                 请确保您的 /public 文件夹中有 'wechat-pay.jpg' 和 'alipay.jpg' 
-              */}
               <img 
                 src={paymentMethod === 'wechat' ? '/wechat-pay.jpg' : '/alipay.jpg'} 
                 alt="Payment QR Code"
                 className="w-full h-full object-contain"
                 onError={(e) => {
                   e.currentTarget.style.display = 'none';
-                  // 显示占位提示
                   const parent = e.currentTarget.parentElement;
                   if (parent) {
                     parent.innerHTML = `<div class='text-center text-slate-400 text-xs p-4'>请添加收款码图片到<br/>public/${paymentMethod === 'wechat' ? 'wechat-pay.jpg' : 'alipay.jpg'}</div>`;
@@ -130,9 +142,12 @@ const PaywallModal: React.FC<PaywallModalProps> = ({ isOpen, onClose, onSuccess,
             </div>
             
             <div className="text-center">
-               <p className="text-3xl font-extrabold text-slate-900 tracking-tight">{PRICE_TEXT} <span className="text-sm font-normal text-slate-500">/ 终身</span></p>
-               <p className="text-sm text-slate-500 mt-1 font-medium">
-                 {paymentMethod === 'wechat' ? '请打开微信 [扫一扫]' : '请打开支付宝 [扫一扫]'}
+               <div className="flex items-baseline justify-center gap-2">
+                 <p className="text-3xl font-extrabold text-slate-900 tracking-tight">{PRICE_TEXT}</p>
+                 <p className="text-sm text-slate-400 line-through decoration-slate-400">{ORIGINAL_PRICE}</p>
+               </div>
+               <p className="text-xs text-slate-500 mt-1 font-medium bg-white px-3 py-1 rounded-full inline-block border border-slate-200">
+                 终身授权 • 一次付费 • 永久使用
                </p>
             </div>
           </div>
@@ -146,7 +161,7 @@ const PaywallModal: React.FC<PaywallModalProps> = ({ isOpen, onClose, onSuccess,
                 <span className="flex-shrink-0 w-6 h-6 rounded-full bg-brand-100 text-brand-700 flex items-center justify-center text-xs font-bold mt-0.5">1</span>
                 <div className="flex-1">
                   <p className="text-sm text-slate-700 font-medium">发送<span className="text-brand-700 font-bold">支付截图</span>给作者</p>
-                  <p className="text-xs text-slate-500 mt-1">请添加微信或发送邮件，我们会尽快回复。</p>
+                  <p className="text-xs text-slate-500 mt-1">人工在线，确认后秒发激活码。</p>
                   
                   {/* Contact Cards */}
                   <div className="mt-3 grid grid-cols-1 gap-2">
@@ -198,7 +213,7 @@ const PaywallModal: React.FC<PaywallModalProps> = ({ isOpen, onClose, onSuccess,
               
               <div className="flex items-start gap-3">
                 <span className="flex-shrink-0 w-6 h-6 rounded-full bg-slate-100 text-slate-500 flex items-center justify-center text-xs font-bold mt-0.5">2</span>
-                <p className="text-sm text-slate-600 pt-0.5">作者确认后，将直接发送<span className="font-bold text-slate-900 bg-yellow-100 px-1 rounded">激活码</span>给您。</p>
+                <p className="text-sm text-slate-600 pt-0.5">获取<span className="font-bold text-slate-900 bg-yellow-100 px-1 rounded">激活码</span>后在下方输入。</p>
               </div>
             </div>
           </div>
@@ -214,13 +229,13 @@ const PaywallModal: React.FC<PaywallModalProps> = ({ isOpen, onClose, onSuccess,
                   setError('');
                 }}
                 disabled={isVerifying}
-                placeholder="收到后在此输入: LP-XXXX-XXXX"
+                placeholder="在此粘贴激活码: LP-XXXX-XXXX"
                 className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:border-brand-500 focus:ring-0 outline-none text-center font-mono text-base uppercase transition-all placeholder:text-slate-300"
               />
               {error && <p className="text-red-500 text-xs text-center font-bold animate-pulse">{error}</p>}
               
               <Button type="submit" className="w-full justify-center py-3.5 text-base shadow-lg shadow-brand-200" variant="primary" disabled={isVerifying}>
-                {isVerifying ? <><Loader2 className="animate-spin mr-2 h-5 w-5" /> 正在验证...</> : '立即激活 Pro'}
+                {isVerifying ? <><Loader2 className="animate-spin mr-2 h-5 w-5" /> 正在验证...</> : '立即激活 VIP'}
               </Button>
             </form>
           </div>
